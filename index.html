@@ -1,14 +1,1132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<link  href="stylep0.css" rel="stylesheet" type="text/css">
-	<title></title>
-</head>
-<body>
-<div class="paragraph"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shingo's Boho Flip Finder - Trend Curator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        boho: {
+                            sage: '#7C9082',
+                            rust: '#C06C47',
+                            gold: '#D4AF37',
+                            cream: '#FAF9F6',
+                            sand: '#E8E6D9',
+                            dark: '#2C3632',
+                            accent: '#E69FA3'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Lato"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-pattern: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%237C9082' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        body { background-color: #FAF9F6; background-image: var(--bg-pattern); color: #2C3632; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D6D3C9; border-radius: 10px; }
+        
+        .boho-card { 
+            background: white; 
+            border: 1px solid #E8E6D9; 
+            box-shadow: 6px 6px 0px rgba(192, 108, 71, 0.1); /* Deeper Rust Shadow */
+            border-radius: 16px; /* Slightly more rounded */
+        }
+        .boho-btn { background-color: #7C9082; color: white; font-family: 'Playfair Display', serif; letter-spacing: 0.05em; border-radius: 30px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .boho-btn:hover { background-color: #6A7F70; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        .boho-btn:disabled { background-color: #9CA3AF; cursor: not-allowed; transform: none; }
+        .boho-btn-secondary { background-color: #FAF9F6; color: #2C3632; border: 1px solid #7C9082; font-family: 'Lato', sans-serif; border-radius: 30px; }
+        .boho-btn-secondary:hover { background-color: #F0EEE6; color: #C06C47; border-color: #C06C47; }
+        .styled-input { border: 1px solid #D6D3C9; background: #FFFEFC; border-radius: 8px; transition: border-color 0.2s; }
+        .styled-input:focus { outline: none; border-color: #C06C47; ring: 1px #C06C47; }
+        
+        /* Gradient Header Effect */
+        .funky-header { 
+            font-family: 'Playfair Display', serif; 
+            font-weight: 700; 
+            background: linear-gradient(120deg, #C06C47 30%, #D4AF37 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Stat Bars and Table remain the same for functionality */
+        .stat-bar-container { background-color: #E8E6D9; height: 8px; border-radius: 4px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease-out; }
+        .stat-excellent { background-color: #C06C47; } 
+        .stat-good { background-color: #D4AF37; } 
+        .stat-avg { background-color: #7C9082; }
+        .reseller-table th { font-family: 'Lato', sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7C9082; padding: 12px; border-bottom: 2px solid #E8E6D9; }
+        .reseller-table td { padding: 12px; border-bottom: 1px solid #F0EEE6; font-size: 0.9rem; }
+        .reseller-table tr:last-child td { border-bottom: none; }
+        .hidden { display: none !important; }
 
-Hello World!
-	
-</div>
+        /* SVG Trend Line Styling */
+        .trend-line {
+            stroke-width: 3;
+            fill: none;
+            transition: all 0.5s ease-out;
+        }
+        .trend-up { stroke: #10B981; }
+        .trend-down { stroke: #EF4444; }
+        .trend-flat { stroke: #D4AF37; }
+        .trend-fill { fill: #10B981; fill-opacity: 0.1; }
+    </style>
+</head>
+
+<body class="font-sans min-h-screen flex flex-col items-center">
+
+    <div id="app" class="w-full max-w-lg min-h-screen flex flex-col bg-boho-cream shadow-2xl relative overflow-hidden border-x border-stone-200">
+        
+        <!-- Header -->
+        <header class="px-6 py-5 bg-white border-b border-stone-100 flex justify-between items-center sticky top-0 z-30 opacity-95 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-boho-rust rounded-full flex items-center justify-center text-white text-xl shadow-md">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-xl text-boho-dark leading-none">Flip Finder</h1>
+                    <span class="text-[0.65rem] uppercase tracking-widest text-boho-sage font-bold">Curated Resale AI</span>
+                </div>
+            </div>
+            <button onclick="window.location.reload()" class="text-boho-sage hover:text-boho-rust transition-colors" title="Reload App">
+                <i class="fa-solid fa-rotate-right text-xl"></i>
+            </button>
+        </header>
+
+        <!-- Error Banner -->
+        <div id="app-error-container" class="hidden m-4 p-4 bg-red-50 border-l-4 border-red-400 rounded shadow-sm flex items-start space-x-3">
+            <i class="fa-solid fa-triangle-exclamation text-red-500 mt-1"></i>
+            <div>
+                <h4 class="font-bold text-red-800 text-sm">Alert</h4>
+                <p class="text-xs text-red-700 mt-1" id="error-message">Something went wrong.</p>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-boho-cream/95 backdrop-blur-sm">
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 border-4 border-boho-sage/20 rounded-full animate-spin" style="animation-duration: 3s;"></div>
+                <div class="absolute inset-0 border-t-4 border-boho-rust rounded-full animate-spin"></div>
+                <div class="absolute inset-4 bg-white rounded-full shadow-inner flex items-center justify-center">
+                    <i class="fa-solid fa-gem text-boho-gold text-2xl animate-pulse"></i>
+                </div>
+            </div>
+            <h3 id="loading-title" class="font-serif text-xl font-bold text-boho-dark mb-2">Analyzing...</h3>
+            <p id="loading-subtitle" class="text-sm text-boho-sage italic font-serif">Checking comparables...</p>
+        </div>
+
+        <!-- Floating Chat Button -->
+        <button id="fab-chat" onclick="toggleChat()" class="fixed bottom-24 right-6 z-40 w-14 h-14 bg-boho-dark text-white rounded-full shadow-xl flex items-center justify-center hover:bg-boho-rust transition-colors hover:scale-105 transform duration-200">
+            <i class="fa-solid fa-comments text-xl"></i>
+        </button>
+
+        <!-- Chat Modal -->
+        <div id="chat-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-boho-dark/40 backdrop-blur-md sm:p-4">
+            <div class="bg-white w-full sm:max-w-md h-[80vh] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col">
+                <div class="bg-boho-dark p-4 flex justify-between items-center text-white">
+                    <h3 class="font-serif font-bold flex items-center gap-2"><i class="fa-solid fa-robot"></i> Ask Shingo</h3>
+                    <button onclick="toggleChat()" class="hover:text-boho-gold"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <div id="chat-history" class="flex-1 overflow-y-auto p-4 space-y-4 bg-boho-cream"></div>
+                <div class="p-3 border-t border-stone-200 bg-white flex gap-2">
+                    <input type="text" id="chat-input" class="styled-input flex-1 p-2 text-sm" placeholder="Ask a follow-up...">
+                    <button onclick="sendChat()" class="boho-btn px-4 py-2"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clarification Modal -->
+        <div id="clarification-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-boho-dark/40 backdrop-blur-md p-4">
+            <div class="bg-white w-full max-w-sm rounded-xl shadow-xl p-6 border-t-4 border-boho-gold">
+                <div class="text-center mb-4">
+                    <div class="w-12 h-12 bg-yellow-50 text-boho-gold rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-magnifying-glass-plus text-xl"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-boho-dark">I need a closer look</h3>
+                    <p class="text-sm text-gray-600 mt-2" id="clarification-question"></p>
+                </div>
+                <div id="clarification-options" class="space-y-2 mb-4"></div>
+                <input type="text" id="clarification-manual" class="styled-input w-full p-2 text-sm" placeholder="Or type details here...">
+                <button id="submit-clarification" class="w-full mt-4 boho-btn py-3 font-bold">Update Analysis</button>
+            </div>
+        </div>
+
+        <!-- Creative Studio Modal -->
+        <div id="creative-modal" class="hidden fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-boho-dark/40 backdrop-blur-md sm:p-4">
+            <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+                <div class="bg-boho-rust/10 p-4 border-b border-boho-rust/20 flex justify-between items-center">
+                    <h3 class="font-serif font-bold text-lg text-boho-rust flex items-center">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Creative Studio
+                    </h3>
+                    <button onclick="closeCreativeModal()" class="text-gray-400 hover:text-boho-rust"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div class="p-6 overflow-y-auto">
+                    <h4 id="creative-title" class="font-bold text-boho-dark text-xl mb-2 font-serif"></h4>
+                    <div id="creative-content" class="prose prose-sm prose-stone mb-6"></div>
+                    <button onclick="copyCreative()" id="copy-creative-btn" class="w-full boho-btn py-3 text-sm font-bold">
+                        <i class="fa-regular fa-copy mr-1"></i> Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketplace Listing Modal -->
+        <div id="listing-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-boho-dark/40 backdrop-blur-md sm:p-4">
+            <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div class="bg-boho-sage/10 p-4 border-b border-boho-sage/20 flex justify-between items-center">
+                    <h3 class="font-serif font-bold text-lg text-boho-sage flex items-center">
+                        <i class="fa-brands fa-facebook mr-2"></i> Listing Kit
+                    </h3>
+                    <button onclick="closeListingModal()" class="text-gray-400 hover:text-boho-rust"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div id="listing-content" class="p-6 overflow-y-auto flex-1 space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Title</label>
+                        <div class="flex mt-1">
+                            <input type="text" id="list-title" class="styled-input w-full p-2 text-sm rounded-r-none border-r-0" readonly>
+                            <button class="px-3 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-100 text-gray-500" onclick="copyField('list-title')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Price</label>
+                            <div class="flex mt-1">
+                                <input type="text" id="list-price" class="styled-input w-full p-2 text-sm rounded-r-none border-r-0" readonly>
+                                <button class="px-3 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-100 text-gray-500" onclick="copyField('list-price')"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase">Condition</label>
+                            <div class="flex mt-1">
+                                <input type="text" id="list-condition" class="styled-input w-full p-2 text-sm rounded-r-none border-r-0" readonly>
+                                <button class="px-3 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-100 text-gray-500" onclick="copyField('list-condition')"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Description</label>
+                        <div class="relative mt-1">
+                            <textarea id="list-desc" rows="6" class="styled-input w-full p-2 text-sm" readonly></textarea>
+                            <button class="absolute top-2 right-2 px-2 py-1 bg-white/80 rounded border hover:bg-white shadow-sm text-xs text-gray-500" onclick="copyField('list-desc')"><i class="fa-regular fa-copy"></i> Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase">Tags</label>
+                        <div class="flex mt-1">
+                            <input type="text" id="list-tags" class="styled-input w-full p-2 text-sm rounded-r-none border-r-0" readonly>
+                            <button class="px-3 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg hover:bg-gray-100 text-gray-500" onclick="copyField('list-tags')"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 border-t border-gray-100">
+                    <a href="https://www.facebook.com/marketplace/create/item" target="_blank" class="w-full boho-btn py-3 text-center block font-bold bg-[#1877F2] hover:bg-[#166fe5] text-white shadow-md">
+                        Open FB Marketplace <i class="fa-solid fa-arrow-up-right-from-square ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto pb-24 scroll-smooth bg-transparent px-4" id="main-scroll">
+            
+            <!-- VIEW: Input -->
+            <div id="input-container" class="py-6 space-y-6 fade-in-up">
+                <div class="text-center space-y-2 px-8">
+                    <h2 class="funky-header text-3xl italic">What did you find?</h2>
+                    <p class="text-gray-500 text-sm font-sans">Upload your estate sale treasures for a discerning market analysis.</p>
+                </div>
+
+                <!-- Camera/Upload -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <label class="block font-serif font-bold text-boho-dark mb-3">Item Photos</label>
+                    <div class="relative group cursor-pointer">
+                        <input type="file" id="image-input" accept="image/*" multiple class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer">
+                        <div class="border-2 border-dashed border-boho-sage/40 rounded-xl p-8 text-center bg-boho-sage/5 transition-all group-hover:bg-boho-sage/10 group-hover:border-boho-sage">
+                            <i class="fa-solid fa-camera-retro text-3xl text-boho-sage mb-2"></i>
+                            <p class="text-sm font-bold text-boho-dark">Snap or Upload</p>
+                            <p class="text-xs text-gray-500">Up to 4 images</p>
+                        </div>
+                    </div>
+                    <div id="preview-grid" class="grid grid-cols-4 gap-2 mt-4 empty:hidden"></div>
+                </div>
+
+                <!-- Context -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+                    <h3 class="font-serif font-bold text-boho-dark">Context & Cost</h3>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Question / Prompt</label>
+                        <textarea id="prompt-input" rows="2" class="styled-input w-full p-3 mt-1 text-sm" placeholder="e.g. Is this authentic mid-century? What's the pattern name?"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cost ($)</label>
+                            <input type="number" id="item-price-input" class="styled-input w-full p-2 mt-1" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Era / Style</label>
+                            <input type="text" id="refine-era" class="styled-input w-full p-2 mt-1" placeholder="e.g. 70s Boho">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="identify-button" class="w-full boho-btn py-4 text-lg shadow-lg flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-wand-sparkles"></i>
+                    <span>Curate & Appraise</span>
+                </button>
+            </div>
+
+            <!-- VIEW: Results -->
+            <div id="results-container" class="hidden py-6 space-y-6 fade-in-up">
+                
+                <button onclick="setAppView('input')" class="text-sm text-gray-500 hover:text-boho-rust flex items-center space-x-1 mb-2">
+                    <i class="fa-solid fa-arrow-left-long"></i> <span>Back to Studio</span>
+                </button>
+
+                <!-- Value Card -->
+                <div class="boho-card p-6 bg-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-boho-gold/10 rounded-bl-full -mr-4 -mt-4"></div>
+                    <div class="flex justify-between items-start mb-4 relative z-10">
+                        <div>
+                            <span id="result-badge" class="px-2 py-1 bg-boho-sage text-white text-[0.65rem] font-bold uppercase tracking-wider rounded">Analyzed</span>
+                            <h2 id="result-title" class="font-serif text-2xl font-bold text-boho-dark mt-2 leading-tight">Vintage Item</h2>
+                            <p class="text-xs text-gray-500 mt-1" id="result-date-origin"><i class="fa-regular fa-clock"></i> <span id="val-date">Unknown Era</span></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Resale Value</p>
+                            <p id="result-value" class="font-serif text-2xl font-bold text-boho-rust">$---</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 border-t border-dashed border-gray-200 pt-4">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase">Suggested List</p>
+                            <p id="result-offer" class="font-bold text-gray-800">$---</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase">Profit Potential</p>
+                            <p id="result-profit" class="font-bold text-boho-sage">$---</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: Trend Forecast Chart -->
+                <div class="boho-card p-6">
+                    <h3 class="font-serif font-bold text-lg mb-4 text-boho-dark flex items-center">
+                        <i class="fa-solid fa-chart-line mr-2 text-boho-gold"></i> Trend Forecasting (3 YR)
+                    </h3>
+                    <div id="trend-chart-container" class="mb-4">
+                        <!-- SVG chart injected here -->
+                    </div>
+                    <p id="trend-prediction" class="text-sm italic text-gray-600 border-l-2 border-boho-sage pl-3"></p>
+                </div>
+
+                <!-- 2K Style Attributes -->
+                <div class="boho-card p-6">
+                    <h3 class="font-serif font-bold text-lg mb-4 text-boho-dark">Quality Radar</h3>
+                    <div class="space-y-4" id="stats-container"></div>
+                </div>
+
+                <!-- Analysis Text -->
+                <div class="boho-card p-6">
+                    <h3 class="font-serif font-bold text-lg mb-3 flex items-center text-boho-dark">
+                        <i class="fa-solid fa-feather-pointed mr-2 text-boho-rust"></i> The Curator's Eye
+                    </h3>
+                    <div id="result-text" class="prose prose-sm prose-stone font-sans text-gray-700 leading-relaxed"></div>
+                    
+                    <!-- Audio Player -->
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                         <span class="text-xs font-bold text-gray-400 uppercase">Audio Report</span>
+                         <button id="read-aloud-button" class="w-8 h-8 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center hover:bg-boho-rust hover:text-white transition-colors">
+                            <i id="play-icon" class="fa-solid fa-volume-high text-xs"></i>
+                            <i id="stop-icon" class="fa-solid fa-stop text-xs hidden"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Breakdown Table -->
+                <div class="boho-card overflow-hidden">
+                    <div class="bg-stone-50 px-6 py-3 border-b border-stone-200">
+                        <h3 class="font-serif font-bold text-sm text-boho-dark uppercase tracking-wider">Item Specifics</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full reseller-table text-left border-collapse">
+                            <thead><tr><th>Detail</th><th>Assessment</th></tr></thead>
+                            <tbody id="breakdown-table-body" class="bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Comparable Brands -->
+                <div class="boho-card p-6">
+                    <h3 class="font-serif font-bold text-lg mb-3 text-boho-dark">Comparable Brands/Models</h3>
+                    <p class="text-xs text-gray-500 mb-3">If you like this, look for these too:</p>
+                    <div id="comparable-brands-list" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Smart Comps -->
+                <div class="boho-card p-6">
+                    <h3 class="font-serif font-bold text-lg mb-3 text-boho-dark">Smart Comps (Sold History)</h3>
+                    <div class="grid grid-cols-1 gap-3" id="smart-links-container"></div>
+                </div>
+
+                <!-- Creative Studio Section -->
+                 <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="runStory()" id="story-button" class="boho-btn-secondary py-3 text-sm font-bold text-boho-rust border-boho-rust hover:bg-boho-rust hover:text-white transition-all">
+                        ✨ Spin a Yarn
+                    </button>
+                    <button onclick="runStaging()" id="staging-button" class="boho-btn-secondary py-3 text-sm font-bold text-boho-sage border-boho-sage hover:bg-boho-sage hover:text-white transition-all">
+                        ✨ Staging Whisperer
+                    </button>
+                </div>
+
+                <!-- Action Tools -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="save-button" class="boho-btn py-3 text-sm font-bold bg-boho-dark">
+                        <i class="fa-solid fa-bookmark mr-1"></i> Save to Ledger
+                    </button>
+                    <button onclick="runListing()" id="generate-listing-button" class="boho-btn py-3 text-sm font-bold bg-boho-rust">
+                        <i class="fa-solid fa-pen-nib mr-1"></i> Write Listing
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: Ledger (Saved) -->
+            <div id="saved-finds-container" class="hidden py-6 space-y-4 fade-in-up">
+                <div class="flex justify-between items-center px-2 mb-2">
+                    <h2 class="funky-header text-2xl">The Ledger</h2>
+                    <button onclick="exportToCSV()" class="boho-btn-secondary px-4 py-2 text-xs font-bold">
+                        <i class="fa-solid fa-file-csv"></i> Export CSV
+                    </button>
+                </div>
+                <div class="px-2 mb-2 text-right">
+                    <span id="ledger-total" class="font-mono text-sm font-bold text-boho-sage">$0.00 Profit</span>
+                </div>
+                <input type="text" id="search-saved" class="styled-input w-full p-3 mb-4 text-sm" placeholder="Search your inventory...">
+                <div id="saved-list" class="space-y-3 pb-20"></div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Nav -->
+        <nav class="bg-white border-t border-stone-200 px-6 py-3 flex justify-between items-center sticky bottom-0 z-30 pb-safe">
+            <button onclick="setAppView('input')" id="nav-new-inspection" class="nav-button active flex flex-col items-center space-y-1 w-1/3 text-boho-sage">
+                <i class="fa-solid fa-camera text-xl"></i>
+                <span class="text-[0.6rem] font-bold tracking-widest uppercase">Curate</span>
+            </button>
+            <button onclick="setAppView('saved')" id="nav-saved-finds" class="nav-button flex flex-col items-center space-y-1 w-1/3 text-gray-400 hover:text-boho-rust">
+                <i class="fa-solid fa-book-open text-xl"></i>
+                <span class="text-[0.6rem] font-bold tracking-widest uppercase">Ledger</span>
+            </button>
+            <button onclick="setAppView('dashboard')" id="nav-dashboard" class="nav-button flex flex-col items-center space-y-1 w-1/3 text-gray-400 hover:text-boho-rust">
+                <i class="fa-solid fa-chart-line text-xl"></i>
+                <span class="text-[0.6rem] font-bold tracking-widest uppercase">Growth</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Load Configuration -->
+    <script src="config.js"></script>
+
+    <!-- Hidden Modals & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Config & State ---
+        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'boho-flip-finder';
+        const FLASH_MODEL = "gemini-2.5-flash-preview-09-2025";
+        const TTS_MODEL = "gemini-2.5-flash-preview-tts";
+        // API_KEY is loaded from config.js
+        if (typeof API_KEY === 'undefined' || API_KEY === "YOUR_GEMINI_API_KEY_HERE" || API_KEY === "") {
+            console.error("⚠️ Please configure your Gemini API key in config.js");
+        }
+        
+        let db, auth, userId;
+        let currentReportData = null;
+        let isPlayingSpeech = false;
+        let audioContext = null;
+        let currentAudioSource = null;
+        let _savedItems = [];
+        let clarificationHistory = [];
+
+        // --- Global Functions (Attached to Window for HTML event handlers) ---
+        window.setAppView = (viewName) => {
+            ['input', 'results', 'saved'].forEach(v => {
+                const el = document.getElementById(`${v}-container`);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(`${viewName}-container`);
+            if(target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-button').forEach(b => {
+                b.classList.remove('text-boho-sage', 'active');
+                b.classList.add('text-gray-400');
+            });
+            const activeNav = viewName === 'input' ? 'nav-new-inspection' : (viewName === 'saved' ? 'nav-saved-finds' : 'nav-dashboard');
+            const navEl = document.getElementById(activeNav);
+            if(navEl) {
+                navEl.classList.add('text-boho-sage', 'active');
+                navEl.classList.remove('text-gray-400');
+            }
+            window.scrollTo(0, 0);
+        };
+
+        window.toggleChat = () => {
+            const m = document.getElementById('chat-modal');
+            m.classList.toggle('hidden');
+            // Greet user on first open
+            if (!m.classList.contains('hidden') && document.getElementById('chat-history').children.length === 0) {
+                 window.sendChat("Initial greeting", true);
+            }
+        };
+
+        window.closeCreativeModal = () => document.getElementById('creative-modal').classList.add('hidden');
+        window.closeListingModal = () => document.getElementById('listing-modal').classList.add('hidden');
+        window.copyField = (id) => {
+            const el = document.getElementById(id);
+            if(el) { el.select(); el.setSelectionRange(0, 99999); navigator.clipboard.writeText(el.value); }
+        };
+
+        window.runStory = () => generateCreativeContent('story');
+        window.runStaging = () => generateCreativeContent('staging');
+        window.runListing = () => generateMarketplaceListing();
+        window.exportToCSV = () => exportToCSV();
+        window.copyCreative = () => {
+             const text = document.getElementById('creative-content').innerText;
+             navigator.clipboard.writeText(text);
+             const btn = document.getElementById('copy-creative-btn');
+             btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+             setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy mr-1"></i> Copy to Clipboard', 2000);
+        }
+
+        // --- Init & Events ---
+        async function initApp() {
+            try {
+                // Check if Firebase config is set up
+                if (typeof __firebase_config === 'undefined' || __firebase_config.includes('YOUR_FIREBASE')) {
+                    showError("Configuration Required", "Please configure Firebase settings in config.js. The app will work in limited mode without Firebase.");
+                    bindMainEvents();
+                    return;
+                }
+
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token && __initial_auth_token !== "") {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        subscribeToLedger();
+                    }
+                });
+
+                bindMainEvents();
+            } catch (e) {
+                console.error("Firebase init error:", e);
+                showError("Firebase Connection Failed", "Check your Firebase config in config.js. App will work in limited mode.");
+                bindMainEvents(); // Still allow basic functionality
+            }
+        }
+
+        function bindMainEvents() {
+            document.getElementById('identify-button').addEventListener('click', () => handleIdentification());
+            
+            document.getElementById('submit-clarification').addEventListener('click', () => {
+                const manual = document.getElementById('clarification-manual').value;
+                if(manual) handleIdentification(manual);
+            });
+
+            document.getElementById('image-input').addEventListener('change', (e) => {
+                const grid = document.getElementById('preview-grid');
+                grid.innerHTML = '';
+                Array.from(e.target.files).slice(0,4).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const div = document.createElement('div');
+                        div.className = "w-full h-16 bg-cover bg-center rounded border border-gray-200";
+                        div.style.backgroundImage = `url(${ev.target.result})`;
+                        grid.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            document.getElementById('save-button').addEventListener('click', saveToLedger);
+            document.getElementById('read-aloud-button').addEventListener('click', playReportAudio);
+            
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') window.sendChat(document.getElementById('chat-input').value);
+            });
+            
+            // Search Saved
+            document.getElementById('search-saved').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const items = document.querySelectorAll('#saved-list > div');
+                items.forEach(item => {
+                    item.classList.toggle('hidden', !item.innerText.toLowerCase().includes(term));
+                });
+            });
+        }
+
+        // --- Core Analysis (With Retry) ---
+        async function fetchWithRetry(url, options, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429) throw new Error("Too Many Requests");
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response;
+                } catch (e) {
+                    if (i === retries - 1) throw e;
+                    await new Promise(r => setTimeout(r, 2000 * Math.pow(2, i))); 
+                }
+            }
+        }
+
+        async function analyzeLot(imageParts, promptText, price, prevContext = []) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${FLASH_MODEL}:generateContent?key=${API_KEY}`;
+            const systemPrompt = `
+                You are Shingo's Boho Curator, an expert resale analyst.
+                
+                CORE DIRECTIVE: ACCURACY OVER SPEED.
+                1. If unsure of identity, return status "CLARIFY" and ask a question.
+                2. If confident, return status "SUCCESS".
+                
+                RESPONSE SCHEMA (JSON ONLY):
+                {
+                    "status": "SUCCESS" | "CLARIFY",
+                    "clarification": {
+                        "question": "Specific question?",
+                        "options": ["Option A", "Option B"]
+                    },
+                    "report": {
+                        "title": "Precise Title",
+                        "era": "e.g. Mid-Century (1950s)",
+                        "dateOfOrigin": "Year/Decade",
+                        "marketValue": "$XX - $YY (Used)",
+                        "suggestedList": "$ZZ",
+                        "profitStrategy": "Quick Flip | Hold | Restoration",
+                        "description": "2 paragraphs description.",
+                        "specs": [ {"key": "Material", "value": "..."}, {"key": "Condition", "value": "..."} ],
+                        "searchKeywords": "ebay search terms",
+                        "comparableBrands": ["Brand A", "Brand B"],
+                        "stats": { "demand": 85, "rarity": 60, "condition": 75, "coolFactor": 90 },
+                        "trendForecast": {
+                            "prediction": "The value will steadily increase over the next 3 years due to renewed interest in 70s macrame and natural fibers.",
+                            "sentiment": "Strong Positive",
+                            "historicalData": [10, 15, 25, 28, 30] 
+                        }
+                    }
+                }
+            `;
+
+            let userContent = `Analyze this image. Buy Cost: $${price}. User Note: ${promptText}.`;
+            if (prevContext.length > 0) userContent += `\nPrevious Clarifications: ${JSON.stringify(prevContext)}`;
+
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: userContent }, ...imageParts] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: { responseMimeType: "application/json", temperature: 0.2 }
+            };
+
+            const response = await fetchWithRetry(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) throw new Error("The spirits were silent.");
+            return parseGeminiJSON(text);
+        }
+
+        // --- Generators ---
+        async function generateCreativeContent(type) {
+            if (!currentReportData) { showError("No Data", "Curate an item first."); return; }
+            
+            const btnId = type === 'story' ? 'story-button' : 'staging-button';
+            const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            const prompt = type === 'story' 
+                ? `Write a whimsical, boho-chic fictional backstory for "${currentReportData.title}". Keep it short, focused on vibe/history.`
+                : `You are an interior stylist. Give 3 specific staging tips for "${currentReportData.title}". Suggest background colors and props. HTML bullet points.`;
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${FLASH_MODEL}:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [{ text: `Item: ${JSON.stringify(currentReportData)}\n\nRequest: ${prompt}` }] }] };
+                const response = await fetchWithRetry(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                
+                document.getElementById('creative-title').textContent = type === 'story' ? '✨ Vintage Vibe Scribe' : '✨ The Staging Whisperer';
+                document.getElementById('creative-content').innerHTML = data.candidates?.[0]?.content?.parts?.[0]?.text || "No inspiration found.";
+                document.getElementById('creative-modal').classList.remove('hidden');
+            } catch (e) {
+                showError("Creative Block", e.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function generateMarketplaceListing() {
+            if (!currentReportData) { showError("No Data", "Curate an item first."); return; }
+            
+            const btn = document.getElementById('generate-listing-button');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Drafting...';
+            btn.disabled = true;
+
+            const prompt = `Write a FB Marketplace listing for: ${currentReportData.title}. Price: ${currentReportData.suggestedList}. Return JSON: { "title": "...", "price": "...", "condition": "...", "description": "...", "tags": "..." }`;
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${FLASH_MODEL}:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } };
+                const response = await fetchWithRetry(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                const listing = parseGeminiJSON(data.candidates?.[0]?.content?.parts?.[0]?.text);
+
+                document.getElementById('list-title').value = listing.title;
+                document.getElementById('list-price').value = listing.price;
+                document.getElementById('list-condition').value = listing.condition;
+                document.getElementById('list-desc').value = listing.description;
+                document.getElementById('list-tags').value = listing.tags;
+                document.getElementById('listing-modal').classList.remove('hidden');
+            } catch (e) {
+                showError("Error", "Could not generate listing.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Main Workflow ---
+        async function handleIdentification(clarificationAnswer = null) {
+            const btn = document.getElementById('identify-button');
+            const clarifyBtn = document.getElementById('submit-clarification');
+            
+            if (clarificationAnswer) {
+                clarifyBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Refining...';
+                clarifyBtn.disabled = true;
+                clarificationHistory.push({ question: document.getElementById('clarification-question').textContent, answer: clarificationAnswer });
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Curating...';
+                btn.disabled = true;
+                toggleLoading(true, "Consulting the Archives...", "Examining construction...");
+                clarificationHistory = [];
+            }
+
+            try {
+                const files = document.getElementById('image-input').files;
+                if (!files.length && !currentReportData?.thumbnail) throw new Error("No photo provided.");
+                
+                let imageParts = [];
+                if (files.length > 0) imageParts = await processImages(files);
+                else if (currentReportData?.rawImage) imageParts = [currentReportData.rawImage];
+
+                const prompt = document.getElementById('prompt-input').value;
+                const price = document.getElementById('item-price-input').value || 0;
+
+                const result = await analyzeLot(imageParts, prompt, price, clarificationHistory);
+
+                if (result.status === "CLARIFY") {
+                    toggleLoading(false);
+                    showClarificationModal(result.clarification);
+                } else {
+                    toggleLoading(false);
+                    document.getElementById('clarification-modal').classList.add('hidden');
+                    const thumbnail = imageParts[0].thumbnail || imageParts[0].inlineData.data; 
+                    renderResults(result.report, price, imageParts[0]); 
+                }
+            } catch (e) {
+                toggleLoading(false);
+                showError("Analysis Failed", e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i> <span>Curate & Appraise</span>';
+                btn.disabled = false;
+                clarifyBtn.innerHTML = 'Update Analysis';
+                clarifyBtn.disabled = false;
+            }
+        }
+
+        function renderTrendChart(data, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const WIDTH = container.clientWidth;
+            const HEIGHT = 100;
+            const PADDING = 10;
+            
+            const maxVal = Math.max(...data);
+            const minVal = Math.min(...data);
+            const range = maxVal - minVal;
+            const scaleY = (y) => ((y - minVal) / range) * (HEIGHT - PADDING * 2) + PADDING;
+            const scaleX = (i) => PADDING + i * ((WIDTH - PADDING * 2) / (data.length - 1));
+
+            let points = data.map((y, i) => `${scaleX(i)},${HEIGHT - scaleY(y)}`).join(' ');
+            
+            const startPoint = `${scaleX(0)},${HEIGHT - scaleY(data[0])}`;
+            const endPoint = `${scaleX(data.length - 1)},${HEIGHT - scaleY(data[data.length - 1])}`;
+            
+            let colorClass = 'trend-flat';
+            if (data[data.length - 1] > data[0] * 1.05) { colorClass = 'trend-up'; }
+            else if (data[data.length - 1] < data[0] * 0.95) { colorClass = 'trend-down'; }
+
+            const svg = `
+                <svg width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="${points}" class="trend-line ${colorClass}" />
+                    <polyline points="${points}, ${endPoint.split(',')[0]}, ${HEIGHT}, ${startPoint.split(',')[0]}, ${HEIGHT}" class="trend-fill ${colorClass.replace('trend-', '')}" style="opacity: 0.1;"/>
+                    <circle cx="${scaleX(0)}" cy="${HEIGHT - scaleY(data[0])}" r="3" class="fill-current text-gray-500" />
+                    <circle cx="${scaleX(data.length - 1)}" cy="${HEIGHT - scaleY(data[data.length - 1])}" r="4" class="fill-current ${colorClass.replace('trend-', 'text-')}" />
+                    <text x="${scaleX(0)}" y="${HEIGHT - scaleY(data[0]) - 5}" font-size="10" fill="#7C9082" text-anchor="middle">Start</text>
+                    <text x="${scaleX(data.length - 1)}" y="${HEIGHT - scaleY(data[data.length - 1]) - 5}" font-size="10" fill="#2C3632" font-weight="bold" text-anchor="middle">Future</text>
+                </svg>
+            `;
+            container.innerHTML = svg;
+        }
+
+
+        function renderResults(report, cost, imgObj) {
+            setAppView('results');
+            
+            currentReportData = { 
+                ...report, 
+                cost: parseFloat(cost), 
+                rawImage: imgObj, 
+                thumbnail: imgObj.thumbnail 
+            };
+
+            document.getElementById('result-title').textContent = report.title;
+            document.getElementById('val-date').textContent = report.dateOfOrigin || "Unknown";
+            document.getElementById('result-value').textContent = report.marketValue;
+            document.getElementById('result-offer').textContent = report.suggestedList;
+            
+            const estSale = parseFloat(report.suggestedList.replace(/[^0-9.]/g, '')) || 0;
+            const profit = estSale - (currentReportData.cost || 0) - (estSale * 0.15); 
+            const profitEl = document.getElementById('result-profit');
+            profitEl.textContent = profit > 0 ? `+$${profit.toFixed(2)}` : `$${profit.toFixed(2)}`;
+            profitEl.className = profit > 0 ? "font-bold text-boho-sage" : "font-bold text-red-500";
+
+            const md = report.description.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            document.getElementById('result-text').innerHTML = `<p>${md}</p>`;
+
+            const tbody = document.getElementById('breakdown-table-body');
+            tbody.innerHTML = '';
+            if (report.specs) {
+                report.specs.forEach(spec => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="font-bold text-gray-600">${spec.key}</td><td class="text-gray-800">${spec.value}</td>`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // TREND CHART LOGIC
+            if(report.trendForecast && report.trendForecast.historicalData) {
+                renderTrendChart(report.trendForecast.historicalData, 'trend-chart-container');
+                document.getElementById('trend-prediction').textContent = report.trendForecast.prediction;
+            }
+
+            if(report.stats) renderStats(report.stats);
+
+            const brandsContainer = document.getElementById('comparable-brands-list');
+            brandsContainer.innerHTML = '';
+            if(report.comparableBrands) {
+                report.comparableBrands.forEach(b => {
+                    brandsContainer.innerHTML += `<span class="px-3 py-1 bg-stone-100 rounded-full text-xs font-bold text-gray-600 border border-stone-200">${b}</span>`;
+                });
+            }
+
+            generateSmartLinks(report.searchKeywords);
+        }
+
+        function renderStats(stats) {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = '';
+            const labels = { demand: "Market Demand", rarity: "Rarity", condition: "Condition", coolFactor: "Cool Factor" };
+            for (const [key, val] of Object.entries(stats)) {
+                if(!labels[key]) continue;
+                let colorClass = 'stat-avg';
+                if(val > 80) colorClass = 'stat-excellent'; else if(val > 60) colorClass = 'stat-good';
+                container.innerHTML += `<div><div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-1 text-gray-500"><span>${labels[key]}</span><span>${val}/100</span></div><div class="stat-bar-container"><div class="stat-bar-fill ${colorClass}" style="width: ${val}%"></div></div></div>`;
+            }
+        }
+
+        function generateSmartLinks(keywords) {
+            const grid = document.getElementById('smart-links-container');
+            const encoded = encodeURIComponent(keywords);
+            grid.innerHTML = `
+                <a href="https://www.ebay.com/sch/i.html?_nkw=${encoded}&LH_Sold=1&LH_Complete=1" target="_blank" class="flex items-center justify-between p-3 bg-white border border-stone-200 rounded-lg hover:border-blue-500 hover:text-blue-600 transition-colors"><span class="font-bold text-sm"><i class="fa-brands fa-ebay mr-2"></i> eBay Sold</span><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                <a href="https://lens.google.com/search?p=${encoded}" target="_blank" class="flex items-center justify-between p-3 bg-white border border-stone-200 rounded-lg hover:border-blue-400 hover:text-blue-500 transition-colors"><span class="font-bold text-sm"><i class="fa-brands fa-google mr-2"></i> Google Lens</span><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+            `;
+        }
+
+        async function saveToLedger() {
+            if(!db || !userId) { showError("Not Connected", "Firebase not configured. Please set up config.js to save items."); return; }
+            if(!currentReportData) { showError("No Data", "Run an analysis first."); return; }
+
+            const btn = document.getElementById('save-button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+            
+            try {
+                // --- ULTRA-ROBUST PAYLOAD CREATION ---
+                // 1. Create a clean base object from the report data.
+                const { rawImage, ...reportData } = currentReportData;
+
+                // 2. Explicitly construct the final payload, ensuring all keys are present 
+                // and the image is only the compressed thumbnail string.
+                const cleanPayload = {
+                    title: reportData.title || "Untitled Item",
+                    era: reportData.era || "Unknown Era",
+                    dateOfOrigin: reportData.dateOfOrigin || "N/A",
+                    marketValue: reportData.marketValue || "$0",
+                    suggestedList: reportData.suggestedList || "$0",
+                    cost: parseFloat(reportData.cost) || 0,
+                    description: reportData.description || "",
+                    searchKeywords: reportData.searchKeywords || "",
+                    thumbnail: reportData.thumbnail || "", // This is the compressed base64 string
+                    
+                    // Optional nested objects - stringify/parse ensures correctness
+                    specs: reportData.specs,
+                    stats: reportData.stats,
+                    comparableBrands: reportData.comparableBrands,
+                    trendForecast: reportData.trendForecast,
+                };
+                
+                // Final JSON sanitation to remove any unexpected non-serializable fields if they creep in
+                const payload = JSON.parse(JSON.stringify(cleanPayload));
+
+                const docRef = doc(collection(db, 'artifacts', APP_ID, 'users', userId, 'ledger'));
+                await setDoc(docRef, { ...payload, timestamp: serverTimestamp() });
+                
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+                btn.classList.replace('bg-boho-dark', 'bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.replace('bg-green-600', 'bg-boho-dark');
+                    btn.disabled = false;
+                }, 2000);
+            } catch(e) {
+                console.error("Save failed:", e);
+                showError("Save Failed", "Could not save to ledger. Check console for details.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function subscribeToLedger() {
+            if(!db || !userId) return;
+            const q = collection(db, 'artifacts', APP_ID, 'users', userId, 'ledger');
+            onSnapshot(q, (snapshot) => {
+                _savedItems = [];
+                const list = document.getElementById('saved-list');
+                list.innerHTML = '';
+                let totalProfit = 0;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    _savedItems.push({id: doc.id, ...data});
+                    const buy = data.cost || 0;
+                    const sell = parseFloat(data.suggestedList.replace(/[^0-9.]/g, '')) || 0;
+                    totalProfit += (sell - buy);
+                    const card = document.createElement('div');
+                    card.className = "boho-card p-4 flex items-center space-x-3 cursor-pointer hover:border-boho-gold transition-colors";
+                    card.innerHTML = `<div class="w-12 h-12 rounded bg-gray-100 bg-cover bg-center border border-stone-200" style="background-image: url('data:image/jpeg;base64,${data.thumbnail}')"></div><div class="flex-1 min-w-0"><h4 class="font-serif font-bold text-boho-dark truncate">${data.title}</h4><p class="text-xs text-gray-500">${data.era} • Buy: $${data.cost}</p></div><div class="text-right"><span class="block font-bold text-boho-rust text-sm">${data.marketValue}</span></div>`;
+                    card.onclick = () => {
+                        currentReportData = data;
+                        renderResults(data, data.cost, { thumbnail: data.thumbnail, inlineData: { data: data.thumbnail } });
+                    };
+                    list.appendChild(card);
+                });
+                document.getElementById('ledger-total').textContent = `Pot. Profit: $${totalProfit.toFixed(2)}`;
+            });
+        }
+
+        function exportToCSV() {
+            if(_savedItems.length === 0) { showError("Empty", "Nothing to export."); return; }
+            let csvContent = "data:text/csv;charset=utf-8,Handle,Title,Body,Price,Tags\n";
+            _savedItems.forEach(item => {
+                const title = (item.title || "").replace(/,/g, " ").replace(/"/g, '""');
+                const desc = (item.description || "").replace(/,/g, " ").replace(/\n/g, " ").replace(/"/g, '""');
+                const price = (item.suggestedList || "").replace(/[^0-9.]/g, "");
+                const row = [`"${title.toLowerCase().replace(/\s+/g, '-')}"`, `"${title}"`, `"${desc}"`, `"${price}"`, `"${item.searchKeywords}"`];
+                csvContent += row.join(",") + "\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "inventory.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Chat & Audio ---
+        window.sendChat = async (query, isInitial = false) => {
+            const input = document.getElementById('chat-input');
+            if(!isInitial && !query) return;
+            if(!isInitial) input.value = '';
+            
+            const historyDiv = document.getElementById('chat-history');
+            
+            if(!isInitial) {
+                const userBubble = document.createElement('div');
+                userBubble.className = "flex justify-end";
+                userBubble.innerHTML = `<div class="bg-boho-dark text-white rounded-2xl rounded-tr-none p-3 max-w-[85%] text-sm shadow-sm">${query}</div>`;
+                historyDiv.appendChild(userBubble);
+            }
+            
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = "flex justify-start";
+            loadingBubble.innerHTML = `<div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm text-gray-500 shadow-sm"><i class="fa-solid fa-circle-notch fa-spin"></i></div>`;
+            historyDiv.appendChild(loadingBubble);
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+
+            try {
+                const context = currentReportData ? `Item: ${currentReportData.title} (${currentReportData.era}). Desc: ${currentReportData.description}` : "General question.";
+                const prompt = isInitial 
+                    ? "Greet the user warmly as Shingo and invite them to ask a question about their latest find or strategy. Keep it friendly and concise." 
+                    : `You are Shingo. ${context} User: "${query}". Keep answer short.`;
+                    
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${FLASH_MODEL}:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                const response = await fetchWithRetry(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                loadingBubble.innerHTML = `<div class="bg-white border border-stone-200 rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm text-gray-700 shadow-sm">${answer}</div>`;
+            } catch(e) {
+                loadingBubble.innerHTML = `<div class="bg-red-50 text-red-600 p-3 rounded-2xl">Error connecting.</div>`;
+            }
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+        };
+
+        async function playReportAudio() {
+            if(isPlayingSpeech && currentAudioSource) { currentAudioSource.stop(); isPlayingSpeech = false; return; }
+            if(!currentReportData) return;
+            
+            if (audioContext && audioContext.state === 'suspended') { await audioContext.resume(); }
+
+            const text = document.getElementById('result-text').innerText;
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent?key=${API_KEY}`;
+                const payload = { contents: [{ parts: [{ text: text.substring(0, 600) }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } } } };
+                const response = await fetchWithRetry(url, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)});
+                const data = await response.json();
+                const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                if(!audioData) throw new Error("No audio");
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const rawBuffer = Uint8Array.from(atob(audioData), c => c.charCodeAt(0)).buffer;
+                const dataView = new DataView(rawBuffer);
+                const float32 = new Float32Array(rawBuffer.byteLength / 2);
+                for (let i = 0; i < float32.length; i++) float32[i] = dataView.getInt16(i * 2, true) / 32768.0;
+                const audioBuffer = audioContext.createBuffer(1, float32.length, 24000);
+                audioBuffer.copyToChannel(float32, 0);
+                currentAudioSource = audioContext.createBufferSource();
+                currentAudioSource.buffer = audioBuffer;
+                currentAudioSource.connect(audioContext.destination);
+                currentAudioSource.start(0);
+                isPlayingSpeech = true;
+                currentAudioSource.onended = () => { isPlayingSpeech = false; };
+            } catch(e) { showError("Audio Error", e.message); }
+        }
+
+        // Utils
+        function parseGeminiJSON(text) {
+            try { return JSON.parse(text.replace(/```json\n?|```/g, '').trim()); } 
+            catch (e) { 
+                const start = text.indexOf('{'); const end = text.lastIndexOf('}');
+                if (start !== -1 && end !== -1) return JSON.parse(text.substring(start, end + 1));
+                throw e;
+            }
+        }
+        
+        async function processImages(files) {
+            const processed = [];
+            for (const file of Array.from(files).slice(0, 3)) {
+                const base64 = await resizeImage(file, 1024);
+                const thumb = await resizeImage(file, 300);
+                
+                processed.push({ 
+                    inlineData: { mimeType: 'image/jpeg', data: base64 },
+                    thumbnail: thumb 
+                });
+            }
+            return processed;
+        }
+
+        function resizeImage(file, maxDim) {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
+                        else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function toggleLoading(show, title, sub) {
+            const el = document.getElementById('loading-overlay');
+            if(show) {
+                if(title) document.getElementById('loading-title').innerText = title;
+                if(sub) document.getElementById('loading-subtitle').innerText = sub;
+                el.classList.remove('hidden');
+            } else el.classList.add('hidden');
+        }
+        function showError(title, msg) {
+            const el = document.getElementById('app-error-container');
+            el.querySelector('h4').innerText = title;
+            document.getElementById('error-message').innerText = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        function showClarificationModal(clarification) {
+            document.getElementById('clarification-question').textContent = clarification.question;
+            const optionsDiv = document.getElementById('clarification-options');
+            optionsDiv.innerHTML = '';
+            if(clarification.options) {
+                clarification.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full boho-btn-secondary py-2 text-sm';
+                    btn.textContent = opt;
+                    btn.onclick = () => handleIdentification(opt);
+                    optionsDiv.appendChild(btn);
+                });
+            }
+            document.getElementById('clarification-modal').classList.remove('hidden');
+        }
+
+        initApp();
+    </script>
 </body>
 </html>
